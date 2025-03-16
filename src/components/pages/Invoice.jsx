@@ -1,5 +1,8 @@
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { QRCodeCanvas } from "qrcode.react";
-import React from "react";
+import React, { useRef } from "react";
+import { FaFilePdf } from "react-icons/fa";
 
 const invoiceData = {
   company: {
@@ -108,9 +111,30 @@ const invoiceData = {
 
 const Invoice = () => {
   const { company, buyer, Ack, items, totals } = invoiceData;
+  const invoiceRef = useRef();
+
+  // Function to generate and download PDF
+
+  const handleDownloadPDF = () => {
+    const input = invoiceRef.current;
+
+    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, imgHeight);
+      pdf.save("Invoice.pdf");
+    });
+  };
 
   return (
-    <div className="max-w-6xl mx-auto bg-white p-6 shadow-md border rounded-lg">
+    <div
+      ref={invoiceRef}
+      className="max-w-6xl mx-auto bg-white p-6 shadow-md border rounded-lg"
+    >
       {/* Header */}
 
       {/* Invoice Table */}
@@ -151,7 +175,19 @@ const Invoice = () => {
                   </div>
                 </div>
               </td>
-              <td colSpan={3} className="border border-black px-2 py-1">
+              <td
+                colSpan={3}
+                className="border border-black px-2 py-1 relative"
+              >
+                {/* PDF Export Icon (Top Right Corner) */}
+                <button
+                  onClick={handleDownloadPDF}
+                  className="absolute top-1 right-1 text-red-600 hover:text-red-800 no-print"
+                >
+                  <FaFilePdf size={23} />
+                </button>
+
+                {/* Company Name and Bill Made By */}
                 <div className="text-center">
                   <h2 className="text-xl font-bold">{company.name}</h2>
                   <p className="text-sm">
@@ -264,7 +300,7 @@ const Invoice = () => {
             <tr>
               <td
                 colSpan={11}
-                className="border border-black border-r-2 px-2 py-1"
+                className="border border-black border-r-2 px-2 py-2"
               >
                 <div className="flex justify-between">
                   <span>Ack. No: {Ack.number}</span>
@@ -358,7 +394,7 @@ const Invoice = () => {
                       </div>
 
                       {/* Buyer Details */}
-                      <div className="w-3/4 mt-3 ps-2">
+                      <div className="w-3/4 mt-3 ps-2 pb-2">
                         <h3 className="font-bold">Terms & Conditions</h3>
                         <p className="text-[12px] leading-6">
                           1. We hereby certify that articles of food mentioned
@@ -461,23 +497,23 @@ const Invoice = () => {
               </td>
               <td colSpan={3} className="border border-black px-2 py-1">
                 <div className="my-auto">
-                  <div className="flex justify-between border-b border-black">
+                  <div className="flex justify-between border-b border-black pb-1">
                     <div>Gross Amt.</div>
                     <div>31721.52</div>
                   </div>
-                  <div className="flex justify-between border-b border-black">
+                  <div className="flex justify-between border-b border-black pb-1">
                     <div>Less Sch.</div>
                     <div>0.00</div>
                   </div>
-                  <div className="flex justify-between border-b border-black">
+                  <div className="flex justify-between border-b border-black pb-1">
                     <div>Less CD</div>
                     <div>123.65</div>
                   </div>
-                  <div className="flex justify-between border-b border-black">
+                  <div className="flex justify-between border-b border-black pb-1">
                     <div>R.Off</div>
                     <div>0.00</div>
                   </div>
-                  <div className="flex justify-between font-bold">
+                  <div className="flex justify-between font-bold pb-1">
                     <div>Net Amt.</div>
                     <div>31598.00</div>
                   </div>
@@ -486,6 +522,12 @@ const Invoice = () => {
             </tr>
           </tbody>
         </table>
+        <div className="">
+          <p className="font-bold pb-3">
+            This is computer generated Bill, No signature required.Bank:PUNJAB
+            NATIONAL BANK SEONI 0490008700003292 PUNB0049000
+          </p>
+        </div>
       </div>
     </div>
   );
