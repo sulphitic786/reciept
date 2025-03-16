@@ -1,8 +1,5 @@
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { QRCodeCanvas } from "qrcode.react";
 import React, { useRef } from "react";
-import { FaFilePdf } from "react-icons/fa";
 
 const invoiceData = {
   company: {
@@ -417,75 +414,10 @@ const Invoice = () => {
   const { company, buyer, Ack, items, totals } = invoiceData;
   const invoiceRef = useRef();
 
-  // Function to generate and download PDF
-
-  const handleDownloadPDF = () => {
-    const input = invoiceRef.current;
-
-    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
-      const pdf = new jsPDF("l", "mm", "a4"); // Landscape mode
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const pageHeight = pdfHeight - 15; // Leave space at the bottom for page number
-
-      let yPosition = 0;
-      let remainingHeight = canvas.height;
-      let pageNumber = 1; // Track page number
-
-      while (remainingHeight > 0) {
-        const pageCanvas = document.createElement("canvas");
-        const context = pageCanvas.getContext("2d");
-
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = Math.min(
-          pageHeight * (canvas.width / pdfWidth),
-          remainingHeight
-        );
-
-        context.drawImage(
-          canvas,
-          0,
-          yPosition,
-          canvas.width,
-          pageCanvas.height,
-          0,
-          0,
-          canvas.width,
-          pageCanvas.height
-        );
-
-        const pageImgData = pageCanvas.toDataURL("image/png");
-        pdf.addImage(
-          pageImgData,
-          "PNG",
-          0,
-          0,
-          pdfWidth,
-          (pageCanvas.height * pdfWidth) / canvas.width
-        );
-
-        // ✅ Add Page Number BELOW the Content (not overlapping)
-        pdf.setFontSize(10);
-        pdf.text(`Page ${pageNumber}`, pdfWidth - 20, pdfHeight - 5);
-
-        yPosition += pageCanvas.height;
-        remainingHeight -= pageCanvas.height;
-        pageNumber++;
-
-        if (remainingHeight > 0) {
-          pdf.addPage(); // Add new page if content remains
-        }
-      }
-
-      pdf.save("Invoice.pdf");
-    });
-  };
-
   return (
     <div
       ref={invoiceRef}
-      className="max-w-6xl mx-auto bg-white p-6 shadow-md border rounded-lg"
+      className="max-w-7xl mx-auto bg-white p-3 shadow-md border rounded-lg"
     >
       {/* Header */}
 
@@ -531,14 +463,6 @@ const Invoice = () => {
                 colSpan={3}
                 className="border border-black px-2 py-1 relative"
               >
-                {/* PDF Export Icon (Top Right Corner) */}
-                <button
-                  onClick={handleDownloadPDF}
-                  className="absolute top-1 right-1 text-red-600 hover:text-red-800 no-print"
-                >
-                  <FaFilePdf size={23} />
-                </button>
-
                 {/* Company Name and Bill Made By */}
                 <div className="text-center">
                   <h2 className="text-xl font-bold">{company.name}</h2>
@@ -665,32 +589,30 @@ const Invoice = () => {
 
             {/* ========== 4th Row ======= */}
             <tr>
-              <th className="border border-black px-2 py-1">Particulars/HSN</th>
-              <th className="border border-black px-2 py-1">Pack</th>
-              <th className="border border-black px-2 py-1">M.R.P</th>
-              <th className="border border-black px-2 py-1">GST%</th>
-              <th className="border border-black px-2 py-1">
+              <th className="border border-black py-1">Particulars/HSN</th>
+              <th className="border border-black py-1">Pack</th>
+              <th className="border border-black py-1">M.R.P</th>
+              <th className="border border-black py-1">GST%</th>
+              <th className="border border-black py-1">
                 Rate <br /> <span className="text-[10px]">(incl of Tax)</span>
               </th>
-              <th className="border border-black px-2 py-1">Unit</th>
-              <th className="border border-black px-2 py-1">Qty</th>
-              <th className="border border-black px-2 py-1">Free</th>
-              <th className="border border-black px-2 py-1">Sch Rs</th>
-              <th className="border border-black px-2 py-1 text-[10px]">
+              <th className="border border-black py-1">Unit</th>
+              <th className="border border-black py-1">Qty</th>
+              <th className="border border-black py-1">Free</th>
+              <th className="border border-black py-1">Sch Rs</th>
+              <th className="border border-black py-1 text-[10px]">
                 Co. Sch% <hr /> Cash Disc%
               </th>
-              <th className="border border-black border-r-2 px-2 py-1">
-                Net Amt.
-              </th>
-              <th className="border border-black px-2 py-1">
+              <th className="border border-black border-r-2 py-1">Net Amt.</th>
+              <th className="border border-black py-1">
                 Particulars <br />
-                <div className="flex justify-between gap-8">
+                <div className="flex justify-between gap-9">
                   <span className="">Unit</span>
                   <span className="">M.R.P.</span>
                 </div>
               </th>
-              <th className="border border-black px-2 py-1">Free</th>
-              <th className="border border-black px-2 py-1">Qty</th>
+              <th className="border border-black px-1 py-1">Free</th>
+              <th className="border border-black px-1 py-1">Qty</th>
             </tr>
           </thead>
           <tbody>
@@ -699,35 +621,35 @@ const Invoice = () => {
                 <td className="border border-black max-w-[150px] ps-1 py-1 text-left">
                   {item.particulars_hsn}
                 </td>
-                <td className="border border-black px-2 py-1">{item.pack}</td>
-                <td className="border border-black px-2 py-1">{item.mrp}</td>
-                <td className="border border-black px-2 py-1">
+                <td className="border border-black py-1">{item.pack}</td>
+                <td className="border border-black py-1">{item.mrp}</td>
+                <td className="border border-black py-1">
                   {item.gst_percentage}
                 </td>
-                <td className="border border-black px-2 py-1">
+                <td className="border border-black py-1">
                   {item.rate_incl_tax}
                 </td>
-                <td className="border border-black px-2 py-1">{item.unit}</td>
-                <td className="border border-black px-2 py-1">{item.qty}</td>
-                <td className="border border-black px-2 py-1">{item.free}</td>
-                <td className="border border-black px-2 py-1">{item.sch_rs}</td>
-                <td className="border border-black px-2 py-1">
+                <td className="border border-black py-1">{item.unit}</td>
+                <td className="border border-black py-1">{item.qty}</td>
+                <td className="border border-black py-1">{item.free}</td>
+                <td className="border border-black py-1">{item.sch_rs}</td>
+                <td className="border border-black py-1">
                   {item.co_sch_percentage}
                 </td>
-                <td className="border border-black border-r-2 px-2 py-1">
+                <td className="border border-black border-r-2 py-1">
                   {item.net_amt}
                 </td>
                 <td className="border border-black text-[10px]">
                   <span>{item.particulars_right}</span>
-                  <div className="flex justify-between px-2 pb-1">
+                  <div className="flex justify-between px-1 pb-1">
                     <span className="">{item.unit_right}</span>
                     <span className="">{item.mrp_right}</span>
                   </div>
                 </td>
-                <td className="border border-black px-2 py-1">
+                <td className="border border-black px-1 py-1">
                   {item.free_right}
                 </td>
-                <td className="border border-black px-2 py-1">
+                <td className="border border-black px-1 py-1">
                   {item.qty_right}
                 </td>
               </tr>
