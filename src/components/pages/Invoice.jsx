@@ -118,9 +118,11 @@ const Invoice = () => {
   const handleDownloadPDF = () => {
     const input = invoiceRef.current;
 
-    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+    html2canvas(input, { scale: 3, useCORS: true }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
+
+      // Create a PDF in landscape mode
+      const pdf = new jsPDF("l", "mm", "a4"); // "l" = landscape mode
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
@@ -344,7 +346,7 @@ const Invoice = () => {
           <tbody>
             {items.map((item, index) => (
               <tr key={index} className="border-b text-[12px] text-center">
-                <td className="border border-black max-w-[120px] ps-1 py-1 text-left">
+                <td className="border border-black max-w-[150px] ps-1 py-1 text-left">
                   {item.particulars_hsn}
                 </td>
                 <td className="border border-black px-2 py-1">{item.pack}</td>
@@ -365,9 +367,9 @@ const Invoice = () => {
                 <td className="border border-black border-r-2 px-2 py-1">
                   {item.net_amt}
                 </td>
-                <td className="border border-black px-2 py-1">
-                  {item.particulars_right} <br />
-                  <div className="flex justify-between">
+                <td className="border border-black text-[10px]">
+                  <span>{item.particulars_right}</span>
+                  <div className="flex justify-between px-2 pb-1">
                     <span className="">{item.unit_right}</span>
                     <span className="">{item.mrp_right}</span>
                   </div>
