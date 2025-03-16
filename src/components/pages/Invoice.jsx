@@ -467,9 +467,7 @@ const Invoice = () => {
 
         // ✅ Add Page Number BELOW the Content (not overlapping)
         pdf.setFontSize(10);
-        pdf.text(`Page ${pageNumber}`, pdfWidth / 2, pdfHeight - 5, {
-          align: "center",
-        });
+        pdf.text(`Page ${pageNumber}`, pdfWidth - 20, pdfHeight - 5);
 
         yPosition += pageCanvas.height;
         remainingHeight -= pageCanvas.height;
