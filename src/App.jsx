@@ -3,7 +3,6 @@ import "aos/dist/aos.css";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import AmenitiesPage from "./components/pages/AmenitiesPage";
-import HomePage from "./components/pages/HomePage";
 // import GalleryPage from './components/pages/GalleryPage';
 import ContactPage from "./components/pages/ContactPage";
 import Invoice from "./components/pages/Invoice";
@@ -38,7 +37,8 @@ function App() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<HomePage />} />
+        <Route exact path="/" element={<Invoice />} />
+        {/* <Route exact path="/" element={<HomePage />} /> */}
         <Route exact path="/services" element={<AmenitiesPage />} />
         {/* <Route exact path="/gallerypage" element={<GalleryPage />} /> */}
         <Route exact path="/contactpage" element={<ContactPage />} />
