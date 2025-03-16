@@ -402,25 +402,6 @@ const invoiceData = {
       free_right: 20,
       qty_right: 0,
     },
-    {
-      particulars_hsn: "RIN BAR SAPPHIRE FW 160G ( 30G\n34011930",
-      pack: 160,
-      mrp: 10.0,
-      gst_percentage: 18.0,
-      rate_incl_tax: 690.0,
-      unit: "Box - 84",
-      qty: 20,
-      free: 0,
-      sch_rs: 0,
-      co_sch_percentage: 0,
-      cash_disc_percentage: 0,
-      net_amt: 13800.0,
-      particulars_right: "RIN BAR SAPPHIRE FW 160G",
-      unit_right: "Box - 84",
-      mrp_right: 10.0,
-      free_right: 20,
-      qty_right: 0,
-    },
   ],
   totals: {
     terms_and_condition:
@@ -442,14 +423,15 @@ const Invoice = () => {
     const input = invoiceRef.current;
 
     html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("l", "mm", "a4"); // "l" for landscape mode
+      const pdf = new jsPDF("l", "mm", "a4"); // Landscape mode
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pageHeight = pdfHeight - 15; // Leave space at the bottom for page number
 
       let yPosition = 0;
-      let remainingHeight = canvas.height; // Track remaining content
+      let remainingHeight = canvas.height;
+      let pageNumber = 1; // Track page number
 
       while (remainingHeight > 0) {
         const pageCanvas = document.createElement("canvas");
@@ -457,7 +439,7 @@ const Invoice = () => {
 
         pageCanvas.width = canvas.width;
         pageCanvas.height = Math.min(
-          pdfHeight * (canvas.width / pdfWidth),
+          pageHeight * (canvas.width / pdfWidth),
           remainingHeight
         );
 
@@ -483,11 +465,18 @@ const Invoice = () => {
           (pageCanvas.height * pdfWidth) / canvas.width
         );
 
-        yPosition += pageCanvas.height; // Move to next part
+        // ✅ Add Page Number BELOW the Content (not overlapping)
+        pdf.setFontSize(10);
+        pdf.text(`Page ${pageNumber}`, pdfWidth / 2, pdfHeight - 5, {
+          align: "center",
+        });
+
+        yPosition += pageCanvas.height;
         remainingHeight -= pageCanvas.height;
+        pageNumber++;
 
         if (remainingHeight > 0) {
-          pdf.addPage(); // Add a new page if there's more content
+          pdf.addPage(); // Add new page if content remains
         }
       }
 
@@ -609,7 +598,7 @@ const Invoice = () => {
                     </div>
                     {/* QR Details */}
                     <div className="w-[20%] border flex justify-center items-center">
-                      <QRCodeCanvas size={80} value="https://reactjs.org/" />
+                      <QRCodeCanvas size={80} value={Ack.IRN} />
                     </div>
                   </div>
                   <div className="w-1/3 pl-2">
